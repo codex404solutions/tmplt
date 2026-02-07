@@ -17,10 +17,7 @@
 
 <!-- TREE_START -->
 ```
-├── README.md
-├── index.html
-├── setup.bat
-└── update_tree.py
+
 ```
 <!-- TREE_END -->
 
