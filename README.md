@@ -1,4 +1,4 @@
-# Project Name
+# # 📁 {{REPO_NAME}}
 
 ---
 
@@ -17,9 +17,7 @@
 
 <!-- TREE_START -->
 ```
-├── README.md
-├── setup.bat
-└── update_tree.py
+
 ```
 <!-- TREE_END -->
 
@@ -30,11 +28,11 @@
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/CodeX404lab/.git
+   git clone https://github.com/CodeX404lab/<REPO_NAME>.git
 
 2. Change Directroy
    ```bash
-   cd 
+   cd <REPO_NAME>
 
 3. Run the setup script (Windows only):
    ```bash
