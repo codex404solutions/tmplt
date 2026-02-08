@@ -1,4 +1,4 @@
-# 📁 {{REPO_NAME}}
+# 📁 {{PROJECT_NAME}}
 
 ---
 
