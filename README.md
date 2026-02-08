@@ -1,4 +1,4 @@
-# 📁 {{PROJECT_NAME}}
+# 📁 Tmpl
 
 ---
 
@@ -30,11 +30,11 @@
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/CodeX404lab/{{REPO_NAME}}.git
+   git clone https://github.com/CodeX404lab/tmpl.git
 
 2. Change Directroy
    ```bash
-   cd {{REPO_NAME}}
+   cd tmpl
 
 3. Run the setup script (Windows only):
    ```bash
@@ -45,4 +45,12 @@
 
 
 ## 🔧 Configuration
+
+
+## 👤 Author
+
+**Muhammad Noukhez**  
+📧 mnoukhej@gmail.com
+
+
 
