@@ -50,10 +50,6 @@
 ## 👤 Author
 
 **Muhammad Noukhez**  
-📧 mnoukhej@gmail.com
-## 👤 Author
-
-**Muhammad Noukhez**  
 📧 Email: mnoukhej@gmail.com  
 🐙 GitHub: https://github.com/mnoukhej  
 💼 LinkedIn: https://www.linkedin.com/in/mnoukhej/
