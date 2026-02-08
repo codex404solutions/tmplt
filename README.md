@@ -1,4 +1,4 @@
-# 📁 tmpl
+# 📁 {{REPO_NAME}}
 
 ---
 
