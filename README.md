@@ -1,4 +1,4 @@
-# 📁 Tmpl
+# 📁 Tmplt
 
 ---
 
@@ -30,11 +30,11 @@
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/CodeX404lab/tmpl.git
+   git clone https://github.com/CodeX404lab/tmplt.git
 
 2. Change Directroy
    ```bash
-   cd tmpl
+   cd tmplt
 
 3. Run the setup script (Windows only):
    ```bash
@@ -51,6 +51,5 @@
 
 **Muhammad Noukhez**  
 📧 mnoukhej@gmail.com
-
 
 
