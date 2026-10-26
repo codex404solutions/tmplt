@@ -13,6 +13,51 @@ echo =====================================
 echo CodeX404 project setup (PHP + MySQL + graphify)
 echo =====================================
 
+
+
+:: -------------------------------
+:: Create virtual environment
+:: -------------------------------
+if not exist ".venv" (
+    echo Creating virtual environment...
+    python -m venv .venv
+    echo [OK] .venv created
+) else (
+    echo [SKIP] .venv already exists
+)
+
+:: Activate virtual environment
+call .venv\Scripts\activate
+echo [OK] .venv activated
+
+:: -------------------------------
+:: Upgrade pip
+:: -------------------------------
+echo Upgrading pip...
+python -m pip install --upgrade pip
+if %errorlevel%==0 (
+    echo [OK] pip upgraded
+) else (
+    echo [ERROR] pip upgrade failed
+)
+
+:: -------------------------------
+:: Install dependencies
+:: -------------------------------
+if exist requirements.txt (
+    echo Installing dependencies from requirements.txt...
+    pip install -r requirements.txt
+    if %errorlevel%==0 (
+        echo [OK] requirements installed
+    ) else (
+        echo [ERROR] requirements installation failed
+    )
+) else (
+    echo [SKIP] requirements.txt not found
+)
+
+
+
 :: -------------------------------
 :: .gitignore (append missing lines, never overwrite)
 :: -------------------------------
