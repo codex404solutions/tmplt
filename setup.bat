@@ -1,5 +1,14 @@
 @echo off
 setlocal
+:: ---- OPTIONAL SETTINGS (edit here, no prompts) ----
+:: SITE_DIR = folder to deploy, "." = repo root (example: public_html)
+:: BUILD_GRAPH = 1 builds the graphify graph during setup, 0 skips it
+set "SITE_DIR=."
+set "BUILD_GRAPH=0"
+for %%I in ("%cd%") do set "SITE_NAME=%%~nxI"
+:: ----------------------------------------------------
+set "PATH_GLOB=%SITE_DIR%/**"
+if "%SITE_DIR%"=="." set "PATH_GLOB=**"
 echo =====================================
 echo CodeX404 project setup (PHP + MySQL + graphify)
 echo =====================================
@@ -124,11 +133,10 @@ if exist "graphify-out\graph.json" (
     echo [SKIP] graph already built. Use: graphify update .
     goto :workflow
 )
-set /p BUILD="Build the knowledge graph now? (y/N): "
-if /i "%BUILD%"=="y" (
+if "%BUILD_GRAPH%"=="1" (
     graphify .
 ) else (
-    echo [SKIP] Later, run: graphify .
+    echo [SKIP] Graph not built. Later, run: graphify .
 )
 
 :: -------------------------------
@@ -145,6 +153,39 @@ if not exist ".github\CODEOWNERS" (
 )
 
 :: -------------------------------
+:: deploy.yml (prod = main, dev = dev). Never overwrites an existing one.
+:: -------------------------------
+if exist ".github\workflows\deploy.yml" (
+    echo [SKIP] deploy.yml already exists, not touching a live deploy file
+    goto :readme
+)
+mkdir .github\workflows 2>nul
+set "DF=.github\workflows\deploy.yml"
+>"%DF%"  echo name: Auto Deploy to Hostinger (%SITE_NAME%)
+>>"%DF%" echo(
+>>"%DF%" echo on:
+>>"%DF%" echo   push:
+>>"%DF%" echo     branches:
+>>"%DF%" echo       - main
+>>"%DF%" echo       - dev
+>>"%DF%" echo     paths:
+>>"%DF%" echo       - '%PATH_GLOB%'
+>>"%DF%" echo       - '.github/workflows/deploy.yml'
+>>"%DF%" echo   workflow_dispatch:
+>>"%DF%" echo(
+>>"%DF%" echo concurrency:
+>>"%DF%" echo   group: deploy-${{ github.ref }}
+>>"%DF%" echo   cancel-in-progress: false
+>>"%DF%" echo(
+>>"%DF%" echo jobs:
+call :job prod main PROD production
+>>"%DF%" echo(
+call :job dev dev DEV dev
+echo [OK] deploy.yml created (prod + dev)
+echo [NOTE] Add GitHub secrets: FTP_SERVER_PROD, FTP_USERNAME_PROD, FTP_PASSWORD_PROD, FTP_SERVER_DEV, FTP_USERNAME_DEV, FTP_PASSWORD_DEV
+
+:readme
+:: -------------------------------
 :: README tree workflow (only if update_tree.py exists)
 :: [skip ci] stops the auto-commit from triggering the FTP deploy again
 :: -------------------------------
@@ -158,7 +199,7 @@ if exist ".github\workflows\update-readme.yml" (
 )
 mkdir .github\workflows 2>nul
 set "WF=.github\workflows\update-readme.yml"
->"%WF%"  echo name: Update README Folder Tree
+>"%WF%"  echo name: Update README Folder Tree (%SITE_NAME%)
 >>"%WF%" echo(
 >>"%WF%" echo on:
 >>"%WF%" echo   push:
@@ -205,4 +246,49 @@ exit /b 0
 :addline
 findstr /x /l /c:"%~2" "%~1" >nul 2>&1
 if errorlevel 1 >>"%~1" echo %~2
+goto :eof
+
+:: -------------------------------
+:: helper: write one deploy job. args: name branch SECRETSUFFIX label
+:: -------------------------------
+:job
+>>"%DF%" echo   deploy-%~1:
+>>"%DF%" echo     if: github.ref == 'refs/heads/%~2'
+>>"%DF%" echo     runs-on: ubuntu-latest
+>>"%DF%" echo     steps:
+>>"%DF%" echo       - name: Checkout
+>>"%DF%" echo         uses: actions/checkout@v4
+>>"%DF%" echo       - name: Deploy to %~4
+>>"%DF%" echo         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+>>"%DF%" echo         with:
+>>"%DF%" echo           server: ${{ secrets.FTP_SERVER_%~3 }}
+>>"%DF%" echo           username: ${{ secrets.FTP_USERNAME_%~3 }}
+>>"%DF%" echo           password: ${{ secrets.FTP_PASSWORD_%~3 }}
+>>"%DF%" echo           port: 21
+>>"%DF%" echo           protocol: ftp
+>>"%DF%" echo           local-dir: ./%SITE_DIR%/
+>>"%DF%" echo           server-dir: /
+>>"%DF%" echo           timeout: 60000
+>>"%DF%" echo           dangerous-clean-slate: false
+>>"%DF%" echo           exclude: ^|
+>>"%DF%" echo             **/.git*
+>>"%DF%" echo             **/.github/**
+>>"%DF%" echo             **/*.md
+>>"%DF%" echo             **/.env
+>>"%DF%" echo             **/.env.*
+>>"%DF%" echo             **/tests/**
+>>"%DF%" echo             **/uploads/**
+>>"%DF%" echo             **/storage/**
+>>"%DF%" echo             **/database/**
+>>"%DF%" echo             **/*.sql
+>>"%DF%" echo             **/*.dump
+>>"%DF%" echo             **/*.log
+>>"%DF%" echo             **/*.bak
+>>"%DF%" echo             **/graphify-out/**
+>>"%DF%" echo             **/node_modules/**
+>>"%DF%" echo             **/.venv/**
+>>"%DF%" echo             **/.DS_Store
+>>"%DF%" echo             **/Thumbs.db
+>>"%DF%" echo       - name: Done
+>>"%DF%" echo         run: echo "Deployed to %~4 at $(date)"
 goto :eof
